@@ -2,6 +2,7 @@
 
 import json
 import os
+import re
 
 config = {}
 
@@ -14,6 +15,7 @@ def load_config(config_path = "./config.json"):
     config_str = read_file(config_path)
     # 将json字符串反序列化为dict类型
     config = json.loads(config_str)
+    config = resolve_env_vars(config)
     print("Load config success")
     return config
 
@@ -51,6 +53,22 @@ def channel_conf_val(channel_type, key, default=None):
         # common default config
         return config.get('channel').get(key, default)
     return val
+
+# 遍历 JSON 字典，将包含 ${VAR} 语法的字符串属性替换为环境变量的值
+def resolve_env_vars(data):
+    if isinstance(data, str):
+        # 使用正则表达式或其他方式解析 ${VAR} 语法
+        # 例如使用 re.search(r'\${(\w+)}', data) 来找到 ${VAR} 语法
+        for word in set(re.findall('\${(\w+)}', data)):
+            if os.environ.get(word) is not None:
+                data = data.replace('${' + word + '}', os.environ.get(word))
+        return data
+    elif isinstance(data, list):
+        return [resolve_env_vars(item) for item in data]
+    elif isinstance(data, dict):
+        return {resolve_env_vars(key): resolve_env_vars(value) for key, value in data.items()}
+    else:
+        return data
 
 
 def common_conf_val(key, default=None):
