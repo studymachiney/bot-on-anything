@@ -6,7 +6,7 @@ venv*
 # config.json
 QR.png
 data/
-device.json
+# device.json
 go-cqhttp
 logs/
 session.token
