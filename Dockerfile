@@ -7,5 +7,5 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
-
-CMD ["sh", "-c", "python app.py & cd ./channel/qq && ./go-cqhttp"]
+RUN chmod +x /app/channel/qq/go-cqhttp
+CMD ["sh", "-c", "/app/channel/qq/go-cqhttp && python app.py"]
